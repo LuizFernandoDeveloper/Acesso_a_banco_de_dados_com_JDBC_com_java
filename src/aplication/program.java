@@ -19,16 +19,20 @@ public class program {
 		PreparedStatement statement = null;
 		try {
 			connection = DB.getConnection();
+//			statement = connection.prepareStatement(
+//					 "INSERT INTO seller " 
+//			        + "(Name, Email, BirthDate, BaseSalary, DepartmentId) " 
+//					+ "VALUES " 
+//					+ "( ?, ?, ?, ?, ?)", statement.RETURN_GENERATED_KEYS);
+//			statement.setString(1, "Carl Perple");
+//			statement.setString(2, "carl@gmail.com");
+//			statement.setDate(3, new java.sql.Date(sdf.parse("22/04/1985").getTime()));
+//			statement.setDouble(4, 3000.00);
+//			statement.setInt(5, 4);
+			
 			statement = connection.prepareStatement(
-					 "INSERT INTO seller " 
-			        + "(Name, Email, BirthDate, BaseSalary, DepartmentId) " 
-					+ "VALUES " 
-					+ "( ?, ?, ?, ?, ?)", statement.RETURN_GENERATED_KEYS);
-			statement.setString(1, "Carl Perple");
-			statement.setString(2, "carl@gmail.com");
-			statement.setDate(3, new java.sql.Date(sdf.parse("22/04/1985").getTime()));
-			statement.setDouble(4, 3000.00);
-			statement.setInt(5, 4);
+					"insert into department (Name) values ('D1'), ('D2')", 
+					statement.RETURN_GENERATED_KEYS);
 			
 			int rowsAffected = statement.executeUpdate();
 			
@@ -43,7 +47,7 @@ public class program {
 				System.out.println("No rown affected!");
 			}
 			
-		}catch (SQLException | ParseException e) {
+		}catch (SQLException  e) {
 			throw new DbException(e.getMessage());
 		}finally {
 			DB.closeStatement(statement);
