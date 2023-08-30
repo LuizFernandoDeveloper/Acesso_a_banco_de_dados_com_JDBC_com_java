@@ -1,9 +1,12 @@
 package aplication;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import db.DB;
 import db.DbException;
@@ -11,28 +14,30 @@ import db.DbException;
 public class program {
 
 	public static void main(String[] args) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
-		try{
+		PreparedStatement statement = null;
+		try {
 			connection = DB.getConnection();
-			st = connection.createStatement();
-			rs = st.executeQuery("select * from department");
+			statement = connection.prepareStatement(
+					 "INSERT INTO seller " 
+			        + "(Name, Email, BirthDate, BaseSalary, DepartmentId) " 
+					+ "VALUES " 
+					+ "( ?, ?, ?, ?, ?)");
+			statement.setString(1, "Carl Perple");
+			statement.setString(2, "carl@gmail.com");
+			statement.setDate(3, new java.sql.Date(sdf.parse("22/04/1985").getTime()));
+			statement.setDouble(4, 3000.00);
+			statement.setInt(5, 4);
 			
-			while(rs.next()) {
-				System.out.println(rs.getInt("Id") + " , " + rs.getString("Name")); 
-			}
-			
-		}catch(SQLException e) {
+			int rowsAffected = statement.executeUpdate();
+			System.out.println("Done!  Rows affected: " + rowsAffected );
+		}catch (SQLException | ParseException e) {
 			throw new DbException(e.getMessage());
-			
-		}
-		finally {
-			DB.closeResultSet(rs);
-			DB.closeStatement(st);
+		}finally {
+			DB.closeStatement(statement);
 			DB.closeConnection();
 		}
-
 	}
 
 }
