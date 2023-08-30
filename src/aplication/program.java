@@ -23,7 +23,7 @@ public class program {
 					 "INSERT INTO seller " 
 			        + "(Name, Email, BirthDate, BaseSalary, DepartmentId) " 
 					+ "VALUES " 
-					+ "( ?, ?, ?, ?, ?)");
+					+ "( ?, ?, ?, ?, ?)", statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, "Carl Perple");
 			statement.setString(2, "carl@gmail.com");
 			statement.setDate(3, new java.sql.Date(sdf.parse("22/04/1985").getTime()));
@@ -31,7 +31,18 @@ public class program {
 			statement.setInt(5, 4);
 			
 			int rowsAffected = statement.executeUpdate();
-			System.out.println("Done!  Rows affected: " + rowsAffected );
+			
+			if(rowsAffected > 0) {
+				 ResultSet rs = statement.getGeneratedKeys();
+				 while(rs.next()) {
+					 int id  = rs.getInt(1);
+					 System.out.println("Done!  Id = " + id);
+				 }
+			}
+			else {
+				System.out.println("No rown affected!");
+			}
+			
 		}catch (SQLException | ParseException e) {
 			throw new DbException(e.getMessage());
 		}finally {
