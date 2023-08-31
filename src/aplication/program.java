@@ -3,6 +3,9 @@ package aplication;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.rowset.JoinRowSet;
 
 import db.DB;
 import db.DbException;
@@ -10,25 +13,33 @@ import db.DbIntegrityException;
 
 public class program {
 
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
 		Connection connection = null;
-		PreparedStatement statement = null;
+		Statement statement = null;
 		
 		try {
 			connection = DB.getConnection();
-			statement = connection.prepareStatement(
-					"DELETE FROM department "
-					+"WHERE "
-					+"Id = ?");
+			connection.setAutoCommit(false);
+			statement =  connection.createStatement();
 			
-			statement.setInt(1, 6);
+			 int rows1 = statement.executeUpdate("UPDATE seller SET BaseSalary = 2090 where DepartmentId = 1 ");
+//			 int x = 1;
+//			 if(x < 2) {
+//				 throw new SQLException("Fake error");
+//			 }
+			 int rows2 = statement.executeUpdate("UPDATE seller SET BaseSalary = 3090 where DepartmentId = 2 ");
+			 System.out.println("Rows1:  "+ rows1);
+			 System.out.println("Rows2:  " + rows2);
+			 
+			 connection.commit();
 			
-			int rowsAffected = statement.executeUpdate();
-			
-			System.out.println("Done! Rows affected: " + rowsAffected );
-			
-		} catch ( SQLException e) {
-			throw new  DbIntegrityException(e.getMessage());
+		} catch (SQLException e) {
+				try {
+					connection.rollback();
+					throw new  DbException("Transaction rolled back! caused by: " + e.getMessage());
+				}catch (SQLException e1) {
+					 throw new DbException("Erro trying  to rollback! Causede by: " + e1.getMessage());
+				}
 		}
 		finally {
 			DB.closeStatement(statement);
